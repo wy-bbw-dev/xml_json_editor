@@ -21,14 +21,6 @@ jobs:
                 command: |
                   mkdir build
                   cd build
+                  conan install .. -s compiler=gcc -s compiler.version=12
                   cmake .. -G Ninja
                   cmake --build .
-        #      - when:
-        #          condition:
-        #            or:
-        #              - equal: [ develop, << pipeline.git.branch >> ]
-        #              - equal: [ master, << pipeline.git.branch >> ]
-        #        steps:
-        #          - run:
-        #              name: hell world
-        #              command: echo "hello world"

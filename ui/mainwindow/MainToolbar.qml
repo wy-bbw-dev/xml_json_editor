@@ -15,6 +15,7 @@ ToolBar {
 
     FileController {
         id: fileController
+        onFileContent: (content) => xmlModel.receiveText(content)
     }
     Action {
         id: openFile
@@ -28,6 +29,10 @@ ToolBar {
         text: qsTr("Save")
     }
     Action {
+        id: saveAs
+        text: qsTr("Save as")
+    }
+    Action {
         id: exit   
         text: qsTr("Exit")
         onTriggered: Qt.quit()
@@ -36,6 +41,7 @@ ToolBar {
     RowLayout {
         ToolButton { action: openFile }
         ToolButton { action: save }
+        ToolButton { action: saveAs }
         ToolButton { action: exit }
     }
 }

@@ -6,15 +6,18 @@ class FileController : public QObject {
     Q_OBJECT
     Q_PROPERTY(QUrl file  READ name WRITE setName)
     Q_PROPERTY(QUrl folder READ currentFolder)
-private:
-    QUrl filename;
-    void setName(QUrl name); 
-    QUrl currentFolder();
 public:
     FileController(QObject *parent = nullptr);
-    QUrl name();
-signals:
-    void filenameChanged();
+    QUrl name() const;
+private:
+    void setName(const QUrl& name); 
+    QUrl currentFolder() const;
 private slots:
-    void someErrorOutput();
+    void logNewFileOpened() const;
+    void readNewFile() const;
+signals:
+    void filenameChanged() const;
+    void fileContent(QString fileContent) const;
+private:
+    QUrl filename;
 };

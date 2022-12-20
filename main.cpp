@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <controller/FileController.h>
+#include <model/XmlModel.h>
 
 static constexpr const char* const URI = "xmljsoneditor";
 static constexpr const int MAJOR = 1;
@@ -12,7 +13,7 @@ int main(int argc, char* argv[]) {
 
 
     qmlRegisterType<FileController>(URI, MAJOR, MINOR, "FileController");
-
+    qmlRegisterType<XmlModel>(URI, MAJOR, MINOR, "XmlModel");
 
     const QUrl url(u"qrc:/xmljsoneditor/ui/mainwindow/MainWindow.qml"_qs);
     engine.load(url);
