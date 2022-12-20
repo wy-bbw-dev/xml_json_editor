@@ -21,6 +21,6 @@ jobs:
                 command: |
                   mkdir build
                   cd build
-                  conan install .. -s compiler=gcc -s compiler.version=12
+                  conan install .. -s compiler=gcc -s compiler.version=12 --build=missing
                   cmake .. -G Ninja
                   cmake --build .
