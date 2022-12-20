@@ -28,6 +28,7 @@ set_target_properties(xml_json_editor PROPERTIES
         CXX_EXTENSIONS OFF
 )
 
+
 target_include_directories(xml_json_editor PUBLIC 
     ${PROJECT_SOURCE_DIR}/include)
 
@@ -39,4 +40,7 @@ qt_add_qml_module(xml_json_editor
             ui/mainwindow/MainWindow.qml
             ui/mainwindow/MainMenu.qml
             ui/mainwindow/MainToolbar.qml
+            #        SOURCES
+            #            include/controller/FileController.h
+            #            src/controller/FileController.cpp
 )

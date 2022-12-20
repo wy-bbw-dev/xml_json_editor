@@ -1,15 +1,20 @@
 #include <QObject>
+#include <QUrl>
 #include <QtQml/qqmlregistration.h>
 
 class FileController : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString file  READ name WRITE setName NOTIFY filenameChanged)
+    Q_PROPERTY(QUrl file  READ name WRITE setName)
+    Q_PROPERTY(QUrl folder READ currentFolder)
 private:
-    QString filename;
-    void setName(QString name); 
+    QUrl filename;
+    void setName(QUrl name); 
+    QUrl currentFolder();
 public:
-    FileController(QObject *parent);
-    QString name();
+    FileController(QObject *parent = nullptr);
+    QUrl name();
 signals:
     void filenameChanged();
+private slots:
+    void someErrorOutput();
 };
