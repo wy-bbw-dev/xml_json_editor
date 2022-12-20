@@ -16,6 +16,9 @@ ApplicationWindow {
     }
 
     RowLayout{ 
-        TreeView {}
+        TreeView {
+            id: treeView
+            model: xmlModel
+        }
     }
 }

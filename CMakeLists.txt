@@ -7,14 +7,18 @@ qt_standard_project_setup()
 qt_add_executable(xml_json_editor)
 target_sources(xml_json_editor PRIVATE 
     main.cpp
+        mainwindow.cpp
     src/controller/FileController.cpp
     src/model/XmlModel.cpp
+    src/model/DomItem.cpp
 )
 
 # moc needs header files
 target_sources(xml_json_editor PRIVATE
+        mainwindow.h
     include/controller/FileController.h
     include/model/XmlModel.h
+    include/model/DomItem.h
 )
 
 

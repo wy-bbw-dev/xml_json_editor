@@ -1,3 +1,4 @@
+#pragma once
 #include <QObject>
 #include <QUrl>
 #include <QtQml/qqmlregistration.h>
@@ -9,7 +10,7 @@ class FileController : public QObject {
 public:
     FileController(QObject *parent = nullptr);
     QUrl name() const;
-private:
+public:
     void setName(const QUrl& name); 
     QUrl currentFolder() const;
 private slots:
