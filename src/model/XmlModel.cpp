@@ -19,7 +19,15 @@ void XmlModel::receiveText(QString text) {
         update();
         emit textReceived();
     }
+}
 
+QHash<int, QByteArray> XmlModel::roleNames() const {
+    spdlog::info("asking for role names");
+    QHash<int, QByteArray> names;
+    names[NAME_ROLE] = "name";
+    names[ATTRIBUTE_ROLE] = "attributes";
+    names[VALUE_ROLE] = "value";
+    return names;
 }
 
 void XmlModel::logTextReceival() {
@@ -27,40 +35,68 @@ void XmlModel::logTextReceival() {
 }
 
 QModelIndex XmlModel::index(int row, int column, const QModelIndex& parent) const {
-    if (!hasIndex(row, column, parent)) return QModelIndex();
+    spdlog::info("asking for index {} {}", row, column);
+    if (!hasIndex(row, column, parent)) {
+        spdlog::info("doesn't have index, returning empty model index");
+        return QModelIndex();
+    }
 
     DomItem *parentItem = parent.isValid() ? static_cast<DomItem*>(parent.internalPointer()) : root.get();
+    {
+        QDomNode node = parentItem->node();
+        spdlog::info("parent node name: {}", node.nodeName().toStdString());
+    }
     DomItem *childItem = parentItem->child(row);
-    if (childItem)
+    if (childItem) {
+        spdlog::info("returning after creating child index");    
         return createIndex(row, column, childItem);
+    }
+    spdlog::info("returning empty QModelIndex");
     return QModelIndex();
 }
 
 QModelIndex XmlModel::parent(const QModelIndex& child) const {
-    if (!child.isValid()) return QModelIndex();
+    if (!child.isValid()) {
+        spdlog::info("parent:: returning empty model index because child is invalid");
+        return QModelIndex();
+    }
     DomItem *childItem = static_cast<DomItem*>(child.internalPointer());
     DomItem *parentItem = childItem->parent();
-    if (!parentItem || parentItem == root.get()) return QModelIndex();
+    if (!parentItem || parentItem == root.get()) {
+        spdlog::info("parent:: returning empty model index because no parent or parent is root");
+        return QModelIndex();
+    }
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
 int XmlModel::rowCount(const QModelIndex& parent) const {
-    if (parent.column() > 0) return 0;
+    spdlog::info("row count");
+    if (parent.column() > 0) {
+        spdlog::info("rowCount:: parentcolumn > 0, ");
+        return 0;
+    }
     if (!root) return 0;
     DomItem* parentItem = parent.isValid() ? static_cast<DomItem*>(parent.internalPointer()) : root.get();
-    return parentItem->node().childNodes().count();
+    int noOfChildNodes = parentItem->node().childNodes().count();
+    spdlog::info("no of childnodes {}", noOfChildNodes);
+    return noOfChildNodes;
 }
 
 QVariant XmlModel::data(const QModelIndex& index, int role) const {
+    spdlog::info("querying data: ");
     if (!index.isValid()) return QVariant();
-    if (role != Qt::DisplayRole) return QVariant();
+    //if (role != Qt::DisplayRole) return QVariant();
 
     const DomItem  *item = static_cast<DomItem*>(index.internalPointer());
     const QDomNode node = item->node();
-    switch (index.column()) {
-        case 0:
+    switch (role) {
+        case NAME_ROLE:
+            {
+                spdlog::info("first entry: {}", node.nodeName().toStdString());
+                
             return node.nodeName();
-        case 1:
+            }
+        case ATTRIBUTE_ROLE:
         {
             const QDomNamedNodeMap attributeMap = node.attributes();
             QStringList attributes;
@@ -70,7 +106,7 @@ QVariant XmlModel::data(const QModelIndex& index, int role) const {
             }
             return attributes.join('\n');
         }
-        case 2:
+        case VALUE_ROLE:
             return node.nodeValue().split('\n').join(' ');
         default:
             break;
@@ -79,7 +115,8 @@ QVariant XmlModel::data(const QModelIndex& index, int role) const {
 }
 
 int XmlModel::columnCount(const QModelIndex& index) const {
-    return 3;
+    spdlog::info("columnCount");
+    return 1;
 }
 
 void XmlModel::update() {
@@ -97,18 +134,18 @@ Qt::ItemFlags XmlModel::flags(const QModelIndex& index) const {
     return QAbstractItemModel::flags(index);
 }
 
-QVariant XmlModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch (section) {
-            case 0:
-                return tr("Name");
-            case 1:
-                return tr("Attribute");
-            case 2:
-                return tr("Value");
-            default:
-                break;
-        }
-    }
-    return QVariant();
-}
+//QVariant XmlModel::headerData(int section, Qt::Orientation orientation, int role) const {
+//    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+//        switch (section) {
+//            case 0:
+//                return tr("Name");
+//            case 1:
+//                return tr("Attribute");
+//            case 2:
+//                return tr("Value");
+//            default:
+//                break;
+//        }
+//    }
+//    return QVariant();
+//}
