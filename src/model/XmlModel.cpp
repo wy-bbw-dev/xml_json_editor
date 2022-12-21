@@ -35,23 +35,23 @@ void XmlModel::logTextReceival() {
 }
 
 QModelIndex XmlModel::index(int row, int column, const QModelIndex& parent) const {
-    spdlog::info("asking for index {} {}", row, column);
+    spdlog::info("index:: asking for index {} {}", row, column);
     if (!hasIndex(row, column, parent)) {
-        spdlog::info("doesn't have index, returning empty model index");
+        spdlog::info("index:: doesn't have index, returning empty model index");
         return QModelIndex();
     }
 
     DomItem *parentItem = parent.isValid() ? static_cast<DomItem*>(parent.internalPointer()) : root.get();
     {
         QDomNode node = parentItem->node();
-        spdlog::info("parent node name: {}", node.nodeName().toStdString());
+        spdlog::info("index:: parent node name: {}", node.nodeName().toStdString());
     }
     DomItem *childItem = parentItem->child(row);
     if (childItem) {
-        spdlog::info("returning after creating child index");    
+        spdlog::info("index:: returning after creating child index");    
         return createIndex(row, column, childItem);
     }
-    spdlog::info("returning empty QModelIndex");
+    spdlog::info("index:: returning empty QModelIndex");
     return QModelIndex();
 }
 
@@ -62,30 +62,33 @@ QModelIndex XmlModel::parent(const QModelIndex& child) const {
     }
     DomItem *childItem = static_cast<DomItem*>(child.internalPointer());
     DomItem *parentItem = childItem->parent();
-    if (!parentItem || parentItem == root.get()) {
+    if (!parentItem) {
         spdlog::info("parent:: returning empty model index because no parent or parent is root");
         return QModelIndex();
     }
+    spdlog::info("parent:: creating index for parent");
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
 int XmlModel::rowCount(const QModelIndex& parent) const {
-    spdlog::info("row count");
-    if (parent.column() > 0) {
-        spdlog::info("rowCount:: parentcolumn > 0, ");
+    spdlog::info("row count:: ");
+    //if (parent.column() > 0) {
+    //    spdlog::info("rowCount:: parentcolumn > 0, return ing 0");
+    //    return 0;
+    //}
+    if (!root) {
+        spdlog::info("rowCount:: root not initialized: 0 childnodes");
         return 0;
     }
-    if (!root) return 0;
     DomItem* parentItem = parent.isValid() ? static_cast<DomItem*>(parent.internalPointer()) : root.get();
     int noOfChildNodes = parentItem->node().childNodes().count();
-    spdlog::info("no of childnodes {}", noOfChildNodes);
+    spdlog::info("rowCount:: no of childnodes {}", noOfChildNodes);
     return noOfChildNodes;
 }
 
 QVariant XmlModel::data(const QModelIndex& index, int role) const {
     spdlog::info("querying data: ");
     if (!index.isValid()) return QVariant();
-    //if (role != Qt::DisplayRole) return QVariant();
 
     const DomItem  *item = static_cast<DomItem*>(index.internalPointer());
     const QDomNode node = item->node();
@@ -133,19 +136,3 @@ Qt::ItemFlags XmlModel::flags(const QModelIndex& index) const {
 
     return QAbstractItemModel::flags(index);
 }
-
-//QVariant XmlModel::headerData(int section, Qt::Orientation orientation, int role) const {
-//    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-//        switch (section) {
-//            case 0:
-//                return tr("Name");
-//            case 1:
-//                return tr("Attribute");
-//            case 2:
-//                return tr("Value");
-//            default:
-//                break;
-//        }
-//    }
-//    return QVariant();
-//}
