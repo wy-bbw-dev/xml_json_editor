@@ -9,6 +9,7 @@ jobs:
           username: wy-bbw
           password: $GITHUB_REGISTRY_PASSWORD
     steps:
+      - checkout
       - when:
           condition:
             or:
